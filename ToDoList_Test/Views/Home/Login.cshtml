@@ -1,0 +1,16 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="row">
+    <form asp-action="Login" method="post">
+        <div class="mb-3">
+            <label asp-for="UserName" class="form-label">Имя пользователя</label>
+            <input asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+</div>

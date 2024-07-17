@@ -1,0 +1,21 @@
+﻿@model ChangeUserViewModel
+@{
+    ViewData["Title"] = "Делегирование задачи";
+}
+
+<div class="row">
+    <form asp-action="ChangeUser" method="post">
+        <input type="hidden" asp-for="TaskId" />
+
+        <div class="mb-3">
+            <label asp-for="UserId" class="form-label">Имя пользователя</label>
+            <select asp-for="UserId" class="form-select" asp-items="@(new SelectList(Model.Users, "Id", "Name"))">
+                <option value=""></option>
+            </select>
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Делегировать</button>
+        <a asp-action="Index" class="btn btn-outline-primary">Назад</a>
+    </form>
+</div>

@@ -1,0 +1,42 @@
+﻿@model AddTaskViewModel
+@{
+    ViewData["Title"] = "Новая задача";
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<div class="row">
+    <form asp-action="AddTask" method="post">
+        <div class="mb-3">
+            <label asp-for="ToDoItem.Title" class="form-label">Название</label>
+            <input asp-for="ToDoItem.Title" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ToDoItem.Description" class="form-label">Описание</label>
+            <input asp-for="ToDoItem.Description" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PriorityLevel" class="form-label">Приоритет</label>
+            <select asp-for="PriorityLevel" class="form-select" asp-items="@(new SelectList(Model.Priorities, "Level", "Level"))">
+                <option value=""></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ToDoItem.DueDate" class="form-label">Срок выполнения</label>
+            <input asp-for="ToDoItem.DueDate" class="form-control" type="date" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="UserId" class="form-label">Пользователь (можно делегировать другому)</label>
+            <select asp-for="UserId" class="form-select" asp-items="@(new SelectList(Model.Users, "Id", "Name", Model.UserId))">
+                <option value=""></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Добавить</button>
+        <a asp-action="Index" class="btn btn-outline-primary">Назад</a>
+    </form>
+</div>

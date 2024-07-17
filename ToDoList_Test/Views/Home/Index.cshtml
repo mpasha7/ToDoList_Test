@@ -1,0 +1,89 @@
+﻿@model IndexViewModel
+@{
+    ViewData["Title"] = "ToDo List";
+}
+
+<form asp-action="Filter" method="post">
+    <div class="row">
+        <input type="hidden" name="filters" value="@Model.Filter.UserId" />
+
+        <div class="col-md-6">
+            <label class="form-label">Приоритет:</label>
+            <select name="filters" class="form-select" onchange="this.form.submit()"
+                    asp-items="@(new SelectList(Model.Priorities, "Level", "Level", Model.Filter.PriorityLevel))">
+                <option value="0">Все</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Статус:</label>
+            <select name="filters" class="form-select" onchange="this.form.submit()"
+                    asp-items="@(new SelectList(Model.Statuses, "Key", "Value", Model.Filter.CompleteStatus))">
+            </select>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="text-center my-3">
+        <a asp-action="CleanFilters" class="btn btn-primary">Очистить фильтры</a>
+    </div>
+</div>
+
+<div class="row">
+    <form asp-action="CompleteTask">
+        <table class="table table-bordered table-striped mt-2">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Приоритет</th>
+                    <th>Срок выполнения</th>
+                    <th>Статус</th>
+                    <th class="w-25"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Tasks.Count() <= 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">Здесь нет подходящих задач</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (ToDoItem task in Model.Tasks)
+                    {
+                        string overdue = task.Overdue ? "bg-warning" : "";
+                        <tr>
+                            <td>@task.Title</td>
+                            <td>@task.Description</td>
+                            <td>@task.Priority.Level</td>
+                            <td class="@overdue">@task.DueDate?.ToShortDateString()</td>
+                            <td class="@overdue">@(task.IsCompleted ? "Закрыто" : "Открыто")</td>
+                            <td>
+                                @if (!task.IsCompleted)
+                                {
+                                    <a asp-action="ChangeUser" asp-route-taskid="@task.Id" class="btn btn-secondary">Делегировать</a>
+                                    <button type="submit" name="taskid" value="@task.Id" class="btn btn-danger">Завершить</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<div class="row">
+    <div class="text-center">
+        <a asp-action="AddTask" asp-route-userid="@Model.Filter.UserId" class="btn btn-primary">Добавить задачу</a>
+        <a asp-action="AddUser" class="btn btn-primary">Добавить пользователя</a>
+    </div>
+</div>
+<div class="row">
+    <div class="text-center mt-3">
+        <a asp-action="CleanCompletedTasks" class="btn btn-outline-primary">Удалить завершенные задачи</a>
+    </div>
+</div>
