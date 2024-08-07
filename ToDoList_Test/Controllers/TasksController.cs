@@ -96,9 +96,13 @@ namespace ToDoList_Test.Controllers
         // GET: api/Tasks/5
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ToDoItem>> GetTask(int id)
+        public async Task<ActionResult<ToDoItem>> GetTask(int? id)
         {
+			if (id == null)
+				return BadRequest();
+			
             var toDoItem = await _context.ToDoItems.FindAsync(id);
 
             if (toDoItem == null)
@@ -117,9 +121,13 @@ namespace ToDoList_Test.Controllers
         // GET: api/Tasks/full/5
         [HttpGet("full/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ToDoItem>> GetTaskFullInfo(int id)
         {
+			if (id == null)
+				return BadRequest();
+			
             var task = await _context.ToDoItems.Include(t => t.Priority).Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
 
             if (task == null)
@@ -201,7 +209,7 @@ namespace ToDoList_Test.Controllers
         // POST: api/Tasks?userid=1&priority=1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ToDoItem>> PostTask(ToDoItem task, int userid, int priority)
         {
@@ -216,8 +224,10 @@ namespace ToDoList_Test.Controllers
             task.Priority = priorityObject;
             _context.ToDoItems.Add(task);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+			
+			task.Priority.ToDoItems = null!;
+            task.User.ToDoItems = null!;
+            return CreatedAtAction(nameof(GetTaskFullInfo), new { id = task.Id }, task);
         }
 
         /// <summary>
